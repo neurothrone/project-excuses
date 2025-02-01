@@ -55,7 +55,7 @@ builder.Services.AddSwaggerGen(options =>
         new OpenApiInfo
         {
             Title = "Excuses API",
-            Description = "Making excuses for you since 2023.",
+            Description = "Making excuses for you since 4000 BC.",
             Version = "v1"
         }
     );
