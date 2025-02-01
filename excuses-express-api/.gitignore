@@ -1,0 +1,12 @@
+# IDE specific files
+.idea/
+.vscode/
+
+# Environment files
+.env
+
+# Mac system files
+.DS_Store
+
+# Node modules
+node_modules

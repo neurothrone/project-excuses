@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excuses API Documentation</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet"
+          href="vendor/bootstrap/bootstrap.min.css">
+    <!-- Highlight CSS -->
+    <link rel="stylesheet"
+          href="vendor/highlight/dark-violet.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Excuses API Documentation</h1>
+
+        <div class="card">
+            <div class="card-header">POST /api/excuses</div>
+            <div class="card-body">
+                <p class="text-light">Create a new excuse.</p>
+                <pre><code class="json">{
+    "category": "school",
+    "text": "Aliens abducted my homework."
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">GET /api/excuses</div>
+            <div class="card-body">
+                <p class="text-light">Get all excuses, optionally filtered by category.</p>
+                <pre><code class="bash">GET /api/excuses?category=work</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">GET /api/excuses/{id}</div>
+            <div class="card-body">
+                <p class="text-light">Get an excuse by its ID.</p>
+                <pre><code class="bash">GET /api/excuses/3</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">GET /api/excuses/random</div>
+            <div class="card-body">
+                <p class="text-light">Get a random excuse, optionally filtered by category.</p>
+                <pre><code class="bash">GET /api/excuses/random?category=work</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">GET /api/excuses/categories</div>
+            <div class="card-body">
+                <p class="text-light">Get all excuse categories.</p>
+                <pre><code class="bash">GET /api/excuses/categories</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">PUT /api/excuses/{id}</div>
+            <div class="card-body">
+                <p class="text-light">Update an excuse by its ID.</p>
+                <pre><code class="json">{
+    "category": "school",
+    "text": "Aliens abducted my homework."
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">DELETE /api/excuses/{id}</div>
+            <div class="card-body">
+                <p class="text-light">Delete an excuse by its ID.</p>
+                <pre><code class="bash">DELETE /api/excuses/3</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Highlight JS -->
+    <script src="vendor/highlight/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
