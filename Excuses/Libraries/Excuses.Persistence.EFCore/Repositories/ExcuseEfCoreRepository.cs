@@ -2,6 +2,7 @@ using Excuses.Persistence.EFCore.Data;
 using Excuses.Persistence.Shared.DTO;
 using Excuses.Persistence.Shared.Interfaces;
 using Excuses.Persistence.Shared.Models;
+using Excuses.Persistence.Shared.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -20,107 +21,167 @@ public class ExcuseEfCoreRepository : IExcuseRepository
         _logger = logger;
     }
 
-    public async Task<Excuse?> CreateExcuseAsync(ExcuseInputDto excuse)
+    public async Task<Result<Excuse>> CreateExcuseAsync(ExcuseInputDto excuse)
     {
         try
         {
             var newExcuse = new Excuse { Text = excuse.Text, Category = excuse.Category };
             await _context.Excuses.AddAsync(newExcuse);
             await _context.SaveChangesAsync();
-            return newExcuse;
+            return Result<Excuse>.Success(newExcuse);
         }
         catch (DbUpdateException ex)
         {
             _logger.LogError($"❌ -> Failed to create Excuse: {ex.Message}");
-            return null;
+            return Result<Excuse>.Failure(ExcuseMessages.DbUpdateFailed);
         }
     }
 
-    public async Task<List<Excuse>> GetExcusesAsync()
+    public async Task<Result<List<Excuse>>> GetExcusesAsync()
     {
-        return await _context.Excuses
-            .AsNoTracking()
-            .ToListAsync();
+        try
+        {
+            var excuses = await _context.Excuses
+                .AsNoTracking()
+                .ToListAsync();
+            return Result<List<Excuse>>.Success(excuses);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"❌ -> Failed to get Excuses: {ex.Message}");
+            return Result<List<Excuse>>.Failure(ExcuseMessages.DbReadFailed);
+        }
     }
 
-    public async Task<List<Excuse>> GetExcusesByCategoryAsync(string category)
+    public async Task<Result<List<Excuse>>> GetExcusesByCategoryAsync(string category)
     {
-        return await _context.Excuses
-            .AsNoTracking()
-            .Where(e => e.Category == category)
-            .ToListAsync();
+        try
+        {
+            var excuses = await _context.Excuses
+                .AsNoTracking()
+                .Where(e => e.Category == category)
+                .ToListAsync();
+            return Result<List<Excuse>>.Success(excuses);
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError($"❌ -> Failed to get Excuses by category: {ex.Message}");
+            return Result<List<Excuse>>.Failure(ExcuseMessages.DbReadFailed);
+        }
     }
 
-    public async Task<Excuse?> GetExcuseAsync(int id)
+    public async Task<Result<Excuse>> GetExcuseAsync(int id)
     {
-        return await _context.Excuses
-            .AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Id == id);
+        try
+        {
+            var excuse = await _context.Excuses
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == id);
+            return excuse is not null
+                ? Result<Excuse>.Success(excuse)
+                : Result<Excuse>.Failure(ExcuseMessages.ExcuseNotFound);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"❌ -> Failed to get Excuse: {ex.Message}");
+            return Result<Excuse>.Failure(ExcuseMessages.DbReadFailed);
+        }
     }
 
-    public async Task<Excuse?> GetRandomExcuseAsync()
+    public async Task<Result<Excuse>> GetRandomExcuseAsync()
     {
-        return await _context.Excuses
-            .AsNoTracking()
-            .OrderBy(e => EF.Functions.Random())
-            .FirstOrDefaultAsync();
+        try
+        {
+            var excuse = await _context.Excuses
+                .AsNoTracking()
+                .OrderBy(e => EF.Functions.Random())
+                .FirstOrDefaultAsync();
+            return excuse is not null
+                ? Result<Excuse>.Success(excuse)
+                : Result<Excuse>.Failure(ExcuseMessages.NoExcuses);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"❌ -> Failed to get random Excuse: {ex.Message}");
+            return Result<Excuse>.Failure(ExcuseMessages.DbReadFailed);
+        }
     }
 
-    public async Task<Excuse?> GetRandomExcuseByCategoryAsync(string category)
+    public async Task<Result<Excuse>> GetRandomExcuseByCategoryAsync(string category)
     {
-        return await _context.Excuses
-            .AsNoTracking()
-            .Where(e => e.Category == category)
-            .OrderBy(e => EF.Functions.Random())
-            .FirstOrDefaultAsync();
+        try
+        {
+            var excuse = await _context.Excuses
+                .AsNoTracking()
+                .Where(e => e.Category == category)
+                .OrderBy(e => EF.Functions.Random())
+                .FirstOrDefaultAsync();
+            return excuse is not null
+                ? Result<Excuse>.Success(excuse)
+                : Result<Excuse>.Failure(ExcuseMessages.NoExcusesForCategory(category));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"❌ -> Failed to get random Excuse by category: {ex.Message}");
+            return Result<Excuse>.Failure(ExcuseMessages.DbReadFailed);
+        }
     }
 
-    public async Task<List<string>> GetCategoriesAsync()
+    public async Task<Result<List<string>>> GetCategoriesAsync()
     {
-        return await _context.Excuses
-            .AsNoTracking()
-            .Select(e => e.Category)
-            .Distinct()
-            .ToListAsync();
+        try
+        {
+            var categories = await _context.Excuses
+                .AsNoTracking()
+                .Select(e => e.Category)
+                .Distinct()
+                .ToListAsync();
+            return Result<List<string>>.Success(categories);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"❌ -> Failed to get Excuse categories: {ex.Message}");
+            return Result<List<string>>.Failure(ExcuseMessages.DbReadFailed);
+        }
     }
 
-    public async Task<bool> UpdateExcuseAsync(int id, ExcuseInputDto excuse)
+    public async Task<Result<Excuse>> UpdateExcuseAsync(int id, ExcuseInputDto excuse)
     {
         try
         {
             var existingExcuse = await _context.Excuses.FindAsync(id);
             if (existingExcuse is null)
-                return false;
+                return Result<Excuse>.Failure(ExcuseMessages.ExcuseNotFound);
 
             existingExcuse.Text = excuse.Text;
             existingExcuse.Category = excuse.Category;
             await _context.SaveChangesAsync();
 
-            return true;
+            return Result<Excuse>.Success(existingExcuse);
         }
         catch (DbUpdateException ex)
         {
             _logger.LogError($"❌ -> Failed to update Excuse, error: {ex.Message}");
-            return false;
+            return Result<Excuse>.Failure(ExcuseMessages.DbUpdateFailed);
         }
     }
 
-    public async Task<bool> DeleteExcuseAsync(int id)
+    public async Task<Result<Excuse>> DeleteExcuseAsync(int id)
     {
         try
         {
             var excuse = await _context.Excuses.FindAsync(id);
             if (excuse is null)
-                return false;
+                return Result<Excuse>.Failure(ExcuseMessages.ExcuseNotFound);
 
             _context.Excuses.Remove(excuse);
             await _context.SaveChangesAsync();
-            return true;
+            return Result<Excuse>.Success(excuse);
         }
         catch (DbUpdateException ex)
         {
             _logger.LogError($"❌ -> Failed to delete Excuse, error: {ex.Message}");
-            return false;
+            return Result<Excuse>.Failure(ExcuseMessages.DbUpdateFailed);
         }
     }
 }
