@@ -1,0 +1,44 @@
+@BaseApiUrl = https://localhost:7180/api/v1
+
+
+### POST request to create a new excuse
+POST {{BaseApiUrl}}/excuses
+Content-Type: application/json
+
+{
+  "text": "Aliens abducted me and I lost track of time.",
+  "category": "work"
+}
+
+### GET request to retrieve all excuses
+GET {{BaseApiUrl}}/excuses
+
+
+### GET request to retrieve all excuses filtered by category
+GET {{BaseApiUrl}}/excuses?category=work
+
+
+### GET request to retrieve an excuse by ID
+GET {{BaseApiUrl}}/excuses/3
+
+
+### GET request to retrieve a random excuse
+GET {{BaseApiUrl}}/excuses/random
+
+
+### GET request to retrieve a random excuse filtered by category
+GET {{BaseApiUrl}}/excuses/random?category=work
+
+
+### PUT request to update an excuse by ID
+PUT {{BaseApiUrl}}/excuses/3
+Content-Type: application/json
+
+{
+  "text": "Aliens abducted me and I lost track of time.",
+  "category": "work"
+}
+
+
+### DELETE request to remove an excuse by ID
+DELETE {{BaseApiUrl}}/excuses/5
