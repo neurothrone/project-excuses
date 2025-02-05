@@ -1,0 +1,33 @@
+﻿networks:
+  app-network:
+
+services:
+  excuses-dotnet-webapi:
+    image: neurothrone/excuses-dotnet-webapi:latest
+    container_name: excuses-dotnet-webapi-container
+    build:
+      context: .
+      dockerfile: Applications/Excuses.WebApi.Server/Dockerfile
+    restart: on-failure
+    environment:
+      - ConnectionStrings__ApiDbContext=Server=tcp:my-sql-server.database.windows.net,1433;Initial Catalog=mydatabase;User ID=myadmin;Password=MySecurePassword;
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  excuses-express-webapi:
+    image: neurothrone/excuses-express-webapi:latest
+    container_name: excuses-express-webapi-container
+    build:
+      context: ../excuses-express-api
+      dockerfile: Dockerfile
+    depends_on:
+      - excuses-dotnet-webapi
+    restart: on-failure
+    environment:
+      - DOTNET_API_URL=http://excuses-dotnet-webapi:8080
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
