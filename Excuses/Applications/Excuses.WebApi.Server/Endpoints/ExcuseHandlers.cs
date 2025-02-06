@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Excuses.Persistence.Shared.DTO;
 using Excuses.Persistence.Shared.Interfaces;
 
@@ -10,6 +11,9 @@ public static class ExcuseHandlers
 {
     public static async Task<IResult> CreateExcuseAsync(ExcuseInputDto excuse, IExcuseRepository repository)
     {
+        if (!Validator.TryValidateObject(excuse, new ValidationContext(excuse), null, true))
+            return TypedResults.BadRequest("Invalid excuse data.");
+
         var result = await repository.CreateExcuseAsync(excuse);
         return result.Match<IResult>(
             onSuccess: createdExcuse => TypedResults.Created($"api/excuses/{createdExcuse.Id}", createdExcuse),

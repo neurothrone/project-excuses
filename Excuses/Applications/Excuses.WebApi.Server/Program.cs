@@ -4,6 +4,7 @@ using Excuses.Persistence.InMemory.Data;
 using Excuses.Persistence.InMemory.Repositories;
 using Excuses.Persistence.Shared.Interfaces;
 using Excuses.WebApi.Server.Endpoints;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -98,6 +99,24 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseExceptionHandler(appBuilder =>
+{
+    appBuilder.Run(async context =>
+    {
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        if (exception is BadHttpRequestException)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsJsonAsync(new { error = "Invalid excuse data." });
+            return;
+        }
+
+        // Handle other unexpected errors
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        await context.Response.WriteAsJsonAsync(new { error = "An unexpected error occurred." });
+    });
+});
 
 app.UseStaticFiles();
 app.MapGet("/", async context => context.Response.Redirect("/index.html"));

@@ -7,9 +7,10 @@ public static class ExcuseEndpoints
     public static void MapExcuseEndpoints(this IEndpointRouteBuilder routes)
     {
         var group = routes.MapGroup("api/v1/excuses");
-        
+
         group.MapPost("", ExcuseHandlers.CreateExcuseAsync)
             .WithSummary("Create a new excuse.")
+            .WithDescription("Creates a new excuse.")
             .Produces<Excuse>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest);
 
