@@ -43,6 +43,9 @@ public static class ExcuseHandlers
 
     public static async Task<IResult> UpdateExcuseAsync(int id, ExcuseInputDto excuse, IExcuseRepository repository)
     {
+        if (!Validator.TryValidateObject(excuse, new ValidationContext(excuse), null, true))
+            return TypedResults.BadRequest("Invalid excuse data.");
+        
         var result = await repository.UpdateExcuseAsync(id, excuse);
         return result.Match<IResult>(
             onSuccess: updatedExcuse => TypedResults.Ok(new
