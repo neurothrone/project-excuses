@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.prod.yml = docker-compose.prod.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excuses.Blazor.Wasm", "Applications\Excuses.Blazor.Wasm\Excuses.Blazor.Wasm.csproj", "{020BF603-23DF-46E3-9100-B7EB394185A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,7 @@ Global
 		{90474492-F182-4664-BF00-78AE1B7E5E06} = {5E366A65-D138-4F6D-BFBD-D37164911D72}
 		{EFA17DD7-4D2C-4B5F-B5EE-D2D97728EE85} = {5E366A65-D138-4F6D-BFBD-D37164911D72}
 		{856BBF82-68A8-450E-B5F0-7AA89EA80D44} = {5E366A65-D138-4F6D-BFBD-D37164911D72}
+		{020BF603-23DF-46E3-9100-B7EB394185A8} = {4B64E304-7C4F-4CA0-9800-1776BDE895DF}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B2A5E18F-D308-4599-B5E5-6BB1E93136E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -46,5 +49,9 @@ Global
 		{856BBF82-68A8-450E-B5F0-7AA89EA80D44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{856BBF82-68A8-450E-B5F0-7AA89EA80D44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{856BBF82-68A8-450E-B5F0-7AA89EA80D44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{020BF603-23DF-46E3-9100-B7EB394185A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{020BF603-23DF-46E3-9100-B7EB394185A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{020BF603-23DF-46E3-9100-B7EB394185A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{020BF603-23DF-46E3-9100-B7EB394185A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
