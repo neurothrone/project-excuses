@@ -1,31 +1,21 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Excuses.Blazor.Wasm</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+﻿<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-glow" href="/">Excuses API</a>
+        <button class="navbar-toggler" type="button" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
+        <div class="@NavMenuCssClass navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <NavLink class="nav-link text-glow" href="/" Match="NavLinkMatch.All">All Excuses</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link text-glow" href="/add-excuse">Add Excuse</NavLink>
+                </li>
+            </ul>
+        </div>
     </div>
-</div>
-
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> All Excuses
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/add-excuse">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add Excuse
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/ahh">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Not Found
-            </NavLink>
-        </div>
-    </nav>
-</div>
+</nav>
 
 @code {
     private bool _collapseNavMenu = true;

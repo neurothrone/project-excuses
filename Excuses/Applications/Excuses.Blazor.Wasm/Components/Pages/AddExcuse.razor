@@ -1,9 +1,128 @@
 @page "/add-excuse"
 
+@using Excuses.Persistence.Shared.DTO
+@using Excuses.Persistence.Shared.Interfaces
+@using Excuses.Persistence.Shared.Utils
+
+@inject IExcuseRepository ExcuseRepository
+@inject NavigationManager NavigationManager
+
 <PageTitle>Add Excuse</PageTitle>
 
-<h3>Add Excuse</h3>
+<div class="px-0">
+    <h2 class="text-light text-center mb-4">Add New Excuse</h2>
+    @if (_isError)
+    {
+        <div class="alert alert-danger mb-4" role="alert">
+            Failed to add excuse.
+        </div>
+    }
+    <form class="bg-dark text-light p-4 rounded">
+        <div class="form-group mb-3">
+            <label for="excuse">Excuse</label>
+            <input
+                type="text"
+                class="form-control"
+                id="excuse"
+                placeholder="Enter excuse"
+                @bind-value="_text"
+                @bind-value:event="oninput"
+                required
+                autoComplete="off"/>
+        </div>
+        <div class="form-group mb-3">
+            <label for="category">Category</label>
+            <select
+                class="form-select"
+                id="category"
+                @bind="@_category"
+                required
+                disabled="@_isLoadingCategories">
+                <option value="" disabled>
+                    @if (_isLoadingCategories)
+                    {
+                        <span>Loading categories...</span>
+                    }
+                    else
+                    {
+                        <span>Select a category</span>
+                    }
+                </option>
+                @if (_categories is not null)
+                {
+                    @foreach (var cat in _categories)
+                    {
+                        <option value="@cat">@(cat.Capitalize())</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <button
+            class="btn btn-primary"
+            type="button"
+            @onclick="_onAddExcuseSubmit"
+            disabled="@IsButtonDisabled">
+            @if (_isLoading)
+            {
+                <span class="spinner-border spinner-border-sm spinner-button me-2"
+                      aria-hidden="true"></span>
+                <span role="status">Loading...</span>
+            }
+            else
+            {
+                <span>Add Excuse</span>
+            }
+        </button>
+    </form>
+</div>
 
 @code {
+    private string _text = string.Empty;
+    private string _category = string.Empty;
+    private bool _isLoading = false;
+    private bool _isLoadingCategories = false;
+    private bool _isError = false;
+
+    private List<string>? _categories;
+
+    private bool IsButtonDisabled => _isLoading ||
+                                     _isLoadingCategories ||
+                                     string.IsNullOrWhiteSpace(_text) ||
+                                     string.IsNullOrWhiteSpace(_category);
+
+    protected override async Task OnInitializedAsync()
+    {
+        // _isError = true;
+        // return;
+        
+        _isLoadingCategories = true;
     
+        var result = await ExcuseRepository.GetCategoriesAsync();
+        result.When(
+            onSuccess: categories => _categories = categories,
+            onFailure: _ => _isError = true
+        );
+    
+        _isLoadingCategories = false;
+    }
+
+    private async Task _onAddExcuseSubmit()
+    {
+        _isLoading = true;
+        _isError = false;
+
+        var result = await ExcuseRepository.CreateExcuseAsync(new ExcuseInputDto
+        {
+            Text = _text,
+            Category = _category
+        });
+        result.When(
+            onSuccess: _ => NavigationManager.NavigateTo("/"),
+            onFailure: _ => _isError = true
+        );
+
+        _isLoading = false;
+    }
+
 }
