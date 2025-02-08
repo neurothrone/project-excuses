@@ -18,8 +18,10 @@ public class ExcuseInMemoryRepository : IExcuseRepository
         _currentExcuseId = _dataStore.Excuses.Max(e => e.Id);
     }
 
-    public Task<Result<Excuse>> CreateExcuseAsync(ExcuseInputDto excuse)
+    public async Task<Result<Excuse>> CreateExcuseAsync(ExcuseInputDto excuse)
     {
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
         var newExcuse = new Excuse
         {
             Id = ++_currentExcuseId,
@@ -27,77 +29,93 @@ public class ExcuseInMemoryRepository : IExcuseRepository
             Category = excuse.Category
         };
         _dataStore.Excuses.Add(newExcuse);
-        return Task.FromResult(Result<Excuse>.Success(newExcuse));
+
+        return Result<Excuse>.Success(newExcuse);
     }
 
-    public Task<Result<List<Excuse>>> GetExcusesAsync()
+    public async Task<Result<List<Excuse>>> GetExcusesAsync()
     {
-        return Task.FromResult(Result<List<Excuse>>.Success(_dataStore.Excuses));
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        return Result<List<Excuse>>.Success(_dataStore.Excuses);
     }
 
-    public Task<Result<List<Excuse>>> GetExcusesByCategoryAsync(string category)
+    public async Task<Result<List<Excuse>>> GetExcusesByCategoryAsync(string category)
     {
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
         var excuses = _dataStore.Excuses.Where(e => e.Category == category).ToList();
-        return Task.FromResult(Result<List<Excuse>>.Success(excuses));
+        return Result<List<Excuse>>.Success(excuses);
     }
 
-    public Task<Result<Excuse>> GetRandomExcuseAsync()
+    public async Task<Result<Excuse>> GetRandomExcuseAsync()
     {
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
         if (_dataStore.Excuses.Count == 0)
-            return Task.FromResult(Result<Excuse>.Failure(ExcuseMessages.NoExcuses));
+            return Result<Excuse>.Failure(ExcuseMessages.NoExcuses);
 
         var excuse = _dataStore.Excuses[new Random().Next(_dataStore.Excuses.Count)];
-        return Task.FromResult(Result<Excuse>.Success(excuse));
+        return Result<Excuse>.Success(excuse);
     }
 
-    public Task<Result<Excuse>> GetRandomExcuseByCategoryAsync(string category)
+    public async Task<Result<Excuse>> GetRandomExcuseByCategoryAsync(string category)
     {
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
         var excuses = _dataStore.Excuses
             .Where(e => e.Category == category)
             .ToList();
 
         if (excuses.Count == 0)
-            return Task.FromResult(Result<Excuse>.Failure(ExcuseMessages.NoExcusesForCategory(category)));
+            return Result<Excuse>.Failure(ExcuseMessages.NoExcusesForCategory(category));
 
         var excuse = excuses[new Random().Next(excuses.Count)];
-        return Task.FromResult(Result<Excuse>.Success(excuse));
+        return Result<Excuse>.Success(excuse);
     }
 
-    public Task<Result<Excuse>> GetExcuseAsync(int id)
+    public async Task<Result<Excuse>> GetExcuseAsync(int id)
     {
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
         var excuse = _dataStore.Excuses.FirstOrDefault(e => e.Id == id);
-        return Task.FromResult(excuse is null
+        return excuse is null
             ? Result<Excuse>.Failure(ExcuseMessages.ExcuseNotFound)
-            : Result<Excuse>.Success(excuse));
+            : Result<Excuse>.Success(excuse);
     }
 
-    public Task<Result<List<string>>> GetCategoriesAsync()
+    public async Task<Result<List<string>>> GetCategoriesAsync()
     {
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
         var categories = _dataStore.Excuses
             .Select(e => e.Category)
             .Distinct()
             .ToList();
-        return Task.FromResult(Result<List<string>>.Success(categories));
+        return Result<List<string>>.Success(categories);
     }
 
-    public Task<Result<Excuse>> UpdateExcuseAsync(int id, ExcuseInputDto excuse)
+    public async Task<Result<Excuse>> UpdateExcuseAsync(int id, ExcuseInputDto excuse)
     {
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
         var excuseToUpdate = _dataStore.Excuses.FirstOrDefault(e => e.Id == id);
         if (excuseToUpdate is null)
-            return Task.FromResult(Result<Excuse>.Failure(ExcuseMessages.ExcuseNotFound));
+            return Result<Excuse>.Failure(ExcuseMessages.ExcuseNotFound);
 
         excuseToUpdate.Text = excuse.Text;
         excuseToUpdate.Category = excuse.Category;
-        return Task.FromResult(Result<Excuse>.Success(excuseToUpdate));
+        return Result<Excuse>.Success(excuseToUpdate);
     }
 
-    public Task<Result<Excuse>> DeleteExcuseAsync(int id)
+    public async Task<Result<Excuse>> DeleteExcuseAsync(int id)
     {
+        await Task.Delay(TimeSpan.FromMilliseconds(500));
+
         var excuseToDelete = _dataStore.Excuses.FirstOrDefault(e => e.Id == id);
         if (excuseToDelete is null)
-            return Task.FromResult(Result<Excuse>.Failure(ExcuseMessages.ExcuseNotFound));
+            return Result<Excuse>.Failure(ExcuseMessages.ExcuseNotFound);
 
         _dataStore.Excuses.Remove(excuseToDelete);
-        return Task.FromResult(Result<Excuse>.Success(excuseToDelete));
+        return Result<Excuse>.Success(excuseToDelete);
     }
 }
