@@ -1,0 +1,48 @@
+@using Excuses.Persistence.Shared.Utils
+
+<div class="form-group @CssClass">
+    <label for="category" class="mb-1">Category</label>
+    <select
+        class="form-select"
+        id="category"
+        value="@Selection"
+        @onchange="OnSelectionChanged"
+        required
+        disabled="@IsLoading">
+        <option value="" disabled>
+            @(IsLoading ? "Loading categories..." : "Select a category")
+        </option>
+        @if (Categories is not null)
+        {
+            @foreach (var cat in Categories)
+            {
+                <option value="@cat">@cat.Capitalize()</option>
+            }
+        }
+    </select>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Selection { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> SelectionChanged { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public List<string>? Categories { get; set; }
+    
+    [Parameter]
+    public string CssClass { get; set; } = string.Empty;
+
+    private async Task OnSelectionChanged(ChangeEventArgs e)
+    {
+        if (e.Value is string newValue)
+            await SelectionChanged.InvokeAsync(newValue);
+    }
+
+}

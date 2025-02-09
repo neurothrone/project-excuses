@@ -39,22 +39,12 @@ else
                         <td>@(excuse.Text)</td>
                         <td>@(excuse.Category.Capitalize())</td>
                         <td>
-                            <button
-                                class="btn btn-danger d-inline-flex justify-content-center align-items-center"
-                                type="button"
-                                @onclick="() => _onExcuseDelete(excuse.Id)"
-                                disabled="@_isDeleting">
-                                @if (_deletingId == excuse.Id)
-                                {
-                                    <span class="spinner-border spinner-border-sm spinner-button me-2"
-                                          aria-hidden="true"></span>
-                                    <span role="status">Loading...</span>
-                                }
-                                else
-                                {
-                                    <span>Delete</span>
-                                }
-                            </button>
+                            <LoadingButton
+                                ButtonClass="btn-danger"
+                                Text="Delete"
+                                IsLoading="@(_deletingId == excuse.Id)"
+                                Disabled="@_isDeleting"
+                                OnClick="() => _onExcuseDelete(excuse.Id)"/>
                         </td>
                     </tr>
                 }
@@ -64,6 +54,7 @@ else
 }
 
 @code {
+
     private bool _isError;
     private bool _isDeleting;
     private int? _deletingId;

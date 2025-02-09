@@ -1,0 +1,40 @@
+<div class="form-group @CssClass">
+    <label for="@Id" class="mb-1">@Label</label>
+    <input
+        type="text"
+        class="form-control"
+        id="@Id"
+        placeholder="@Placeholder"
+        value="@Value"
+        @oninput="OnValueChanged"
+        required
+        autocomplete="off"/>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+
+    [Parameter]
+    public string Label { get; set; } = "Input";
+
+    [Parameter]
+    public string Placeholder { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public string CssClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    private async Task OnValueChanged(ChangeEventArgs e)
+    {
+        if (e.Value is string newValue)
+            await ValueChanged.InvokeAsync(newValue);
+    }
+
+}

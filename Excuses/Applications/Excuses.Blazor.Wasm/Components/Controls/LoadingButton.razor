@@ -1,0 +1,41 @@
+<button
+    class="btn @ButtonClass d-inline-flex justify-content-center align-items-center"
+    type="button"
+    @onclick="OnClickHandler"
+    disabled="@Disabled">
+    @if (IsLoading)
+    {
+        <span class="spinner-border spinner-border-sm spinner-button me-2"
+              aria-hidden="true"></span>
+        <span role="status">Loading...</span>
+    }
+    else
+    {
+        <span>@Text</span>
+    }
+</button>
+
+@code {
+
+    [Parameter]
+    public string ButtonClass { get; set; } = "btn-primary";
+
+    [Parameter]
+    public string Text { get; set; } = "Submit";
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    private async Task OnClickHandler()
+    {
+        if (!Disabled && !IsLoading)
+            await OnClick.InvokeAsync();
+    }
+
+}
