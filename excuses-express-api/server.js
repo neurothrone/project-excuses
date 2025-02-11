@@ -1,79 +1,57 @@
-import dotenv from "dotenv";
-import fetch from "node-fetch";
-import https from "https";
+import axios from "axios";
+import {configDotenv} from "dotenv";
 import express from "express";
+// import https from "https";
 
-dotenv.config();
-
-const PORT = process.env.PORT || 3000;
-const NODE_ENV = process.env.NODE_ENV || "development";
-const DOTNET_API_URL = NODE_ENV === "production" ? process.env.API_URL : "https://localhost:7180/api/v1/excuses";
+configDotenv();
 
 const app = express();
 app.use(express.static("public"));
 app.use(express.json());
 
+const PORT = process.env.PORT || 3000;
+
+// !: For deploying on AWS. Use HTTP not HTTPS.
+// const DOTNET_API_URL = process.env.DOTNET_API_URL || "http://localhost:5004/api/v1";
+
+// !: For deploying on local machine
+const DOTNET_API_URL = process.env.DOTNET_API_URL || "http://localhost:5004/api/v1";
+const client = axios.create({});
+
+// !: Use when running .NET API locally with https
+// const DOTNET_API_URL = process.env.DOTNET_API_URL || "https://localhost:7180/api/v1";
+// const client = axios.create({
+//   httpsAgent: new https.Agent({
+//     rejectUnauthorized: false,
+//   }),
+// });
+
 app.post("/api/excuses", async (req, res) => {
   try {
-    const response = await fetch(DOTNET_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(req.body),
-      agent: NODE_ENV === "production" ? undefined : new https.Agent({
-        rejectUnauthorized: false
-      })
-    });
-
-    if (!response.ok) {
-      res.status(500).json({message: "Failed to create excuse"});
-    }
-
-    const data = await response.json();
-    res.json(data);
+    const response = await client.post(`${DOTNET_API_URL}/excuses`, req.body);
+    res.json(response.data);
   } catch (err) {
-    res.status(500).json({message: err});
+    handleAxiosError(err, res);
   }
 });
 
 app.get("/api/excuses", async (req, res) => {
   try {
     const {category} = req.query;
-    const response = await fetch(category ? `${DOTNET_API_URL}?category=${category}` : DOTNET_API_URL, {
-      agent: NODE_ENV === "production" ? undefined : new https.Agent({
-        rejectUnauthorized: false
-      })
-    });
-
-    if (!response.ok) {
-      res.status(500).json({message: "Failed to fetch excuses"});
-    }
-
-    const data = await response.json();
-    res.json(data);
+    const response = await client.get(category ? `${DOTNET_API_URL}/excuses?category=${category}` : `${DOTNET_API_URL}/excuses`);
+    res.json(response.data);
   } catch (err) {
-    res.status(500).json({message: err});
+    handleAxiosError(err, res);
   }
 });
 
 app.get("/api/excuses/random", async (req, res) => {
   try {
     const {category} = req.query;
-    const response = await fetch(category ? `${DOTNET_API_URL}/random?category=${category}` : `${DOTNET_API_URL}/random`, {
-      agent: NODE_ENV === "production" ? undefined : new https.Agent({
-        rejectUnauthorized: false
-      })
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return res.json(data);
-    }
-
-    res.status(500).json({message: "Failed to fetch random excuse"});
+    const response = await client.get(category ? `${DOTNET_API_URL}/excuses/random?category=${category}` : `${DOTNET_API_URL}/random`);
+    res.json(response.data);
   } catch (err) {
-    res.status(500).json({message: err});
+    handleAxiosError(err, res);
   }
 });
 
@@ -86,41 +64,19 @@ app.get("/api/excuses/:id", async (req, res) => {
   }
 
   try {
-    const response = await fetch(`${DOTNET_API_URL}/${req.params.id}`, {
-      agent: NODE_ENV === "production" ? undefined : new https.Agent({
-        rejectUnauthorized: false
-      })
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return res.json(data);
-    } else if (response.status === 404) {
-      return res.status(404).json({message: "Excuse not found"});
-    }
-
-    res.status(500).json({message: "Failed to fetch excuse"});
+    const response = await client.get(`${DOTNET_API_URL}/excuses/${id}`);
+    res.json(response.data);
   } catch (err) {
-    res.status(500).json({message: err});
+    handleAxiosError(err, res);
   }
 });
 
 app.get("/api/excuses/categories", async (req, res) => {
   try {
-    const response = await fetch(`${DOTNET_API_URL}/categories`, {
-      agent: NODE_ENV === "production" ? undefined : new https.Agent({
-        rejectUnauthorized: false
-      })
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return res.json(data);
-    }
-
-    res.status(500).json({message: "Failed to fetch categories"});
+    const response = await client.get(`${DOTNET_API_URL}/excuses/categories`);
+    res.json(response.data);
   } catch (err) {
-    res.status(500).json({message: err});
+    handleAxiosError(err, res);
   }
 });
 
@@ -131,26 +87,10 @@ app.put("/api/excuses/:id", async (req, res) => {
   }
 
   try {
-    const response = await fetch(`${DOTNET_API_URL}/${req.params.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(req.body),
-      agent: NODE_ENV === "production" ? undefined : new https.Agent({
-        rejectUnauthorized: false
-      })
-    });
-
-    if (response.ok) {
-      return res.status(204).send();
-    } else if (response.status === 404) {
-      return res.status(404).json({message: "Excuse not found"});
-    }
-
-    res.status(500).json({message: "Failed to update excuse"});
+    const response = await client.put(`${DOTNET_API_URL}/excuses/${id}`);
+    res.json(response.data);
   } catch (err) {
-    res.status(500).json({message: err});
+    handleAxiosError(err, res);
   }
 });
 
@@ -161,24 +101,26 @@ app.delete("/api/excuses/:id", async (req, res) => {
   }
 
   try {
-    const response = await fetch(`${DOTNET_API_URL}/${req.params.id}`, {
-      method: "DELETE",
-      agent: NODE_ENV === "production" ? undefined : new https.Agent({
-        rejectUnauthorized: false
-      })
-    });
-
-    if (response.ok) {
-      return res.status(204).send();
-    } else if (response.status === 404) {
-      return res.status(404).json({message: "Excuse not found"});
-    }
-
-    res.status(500).json({message: "Failed to delete excuse"});
+    const response = await client.delete(`${DOTNET_API_URL}/excuses/${id}`);
+    res.json(response.data);
   } catch (err) {
-    res.status(500).json({message: err});
+    handleAxiosError(err, res);
   }
 });
+
+function handleAxiosError(error, res) {
+  if (error.response) {
+    if (error.response.status === 404) {
+      res.status(404).json({error: "Excuse not found"});
+    } else {
+      res.status(error.response.status).json({error: error.response.data});
+    }
+  } else if (error.request) {
+    res.status(500).json({error: "No response received from .NET API"});
+  } else {
+    res.status(500).json({error: "Unexpected error occurred"});
+  }
+}
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

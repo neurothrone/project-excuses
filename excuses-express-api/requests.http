@@ -1,3 +1,7 @@
+// !: AWS
+#@BaseApiUrl = http://16.171.43.252:3000/api
+
+// !: Local
 @BaseApiUrl = http://localhost:3000/api
 
 
@@ -41,4 +45,4 @@ Content-Type: application/json
 
 
 ### DELETE request to remove an excuse by ID
-DELETE {{BaseApiUrl}}/excuses/5
+DELETE {{BaseApiUrl}}/excuses/1
