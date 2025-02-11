@@ -13,7 +13,6 @@ WORKDIR /src
 COPY Applications/Excuses.WebApi.Server/Excuses.WebApi.Server.csproj Applications/Excuses.WebApi.Server/
 COPY Libraries/Excuses.Persistence.EFCore/Excuses.Persistence.EFCore.csproj Libraries/Excuses.Persistence.EFCore/
 COPY Libraries/Excuses.Persistence.Shared/Excuses.Persistence.Shared.csproj Libraries/Excuses.Persistence.Shared/
-COPY Libraries/Excuses.Persistence.InMemory/Excuses.Persistence.InMemory.csproj Libraries/Excuses.Persistence.InMemory/
 
 # Restore dependencies
 RUN dotnet restore Applications/Excuses.WebApi.Server/Excuses.WebApi.Server.csproj
