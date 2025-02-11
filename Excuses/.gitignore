@@ -485,8 +485,13 @@ $RECYCLE.BIN/
 
 # Ignore configuration files with sensitive data
 appsettings.json
-appsettings.*.json  # This includes appsettings.Production.json, appsettings.Development.json
 secrets.json
 
 # Ignore scripts with sensitive data
 add-sql-firewall-rules.sh
+
+# SQLite database files
+*.db
+
+# Docker Compose files
+docker-compose.*.yml
