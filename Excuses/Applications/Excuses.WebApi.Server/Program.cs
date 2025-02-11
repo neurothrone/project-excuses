@@ -14,13 +14,13 @@ builder.Services.AddDbContext<ApiDbContext>(options =>
         // "SqliteConnection": "Data Source=/app/data/excuses.db"
 
         // !: SQLite is used for local development
-        options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection") ?? "Data Source=excuses.db");
+        // options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection") ?? "Data Source=excuses.db");
 
         // !: SQL Server is used for production
-        // options.UseSqlServer(
-        //     builder.Configuration.GetConnectionString("AzureConnection") ?? throw new InvalidOperationException(
-        //         $"Connection string 'AzureConnection' not found.")
-        // );
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString("AzureConnection") ?? throw new InvalidOperationException(
+                $"Connection string 'AzureConnection' not found.")
+        );
 
 #if DEBUG
         options.EnableSensitiveDataLogging();
@@ -71,15 +71,15 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-await EnsureDatabaseIsMigrated(app.Services);
-
-async Task EnsureDatabaseIsMigrated(IServiceProvider services)
-{
-    using var scope = services.CreateScope();
-    await using var context = scope.ServiceProvider.GetService<ApiDbContext>();
-    if (context is not null)
-        await context.Database.MigrateAsync();
-}
+// await EnsureDatabaseIsMigrated(app.Services);
+//
+// async Task EnsureDatabaseIsMigrated(IServiceProvider services)
+// {
+//     using var scope = services.CreateScope();
+//     await using var context = scope.ServiceProvider.GetService<ApiDbContext>();
+//     if (context is not null)
+//         await context.Database.MigrateAsync();
+// }
 
 // Use CORS
 app.UseCors("AllowAll");
@@ -92,6 +92,9 @@ if (app.Environment.IsDevelopment())
 }
 
 // NOTE: This is not recommended for production
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseHttpsRedirection();
 
 app.UseExceptionHandler(appBuilder =>
