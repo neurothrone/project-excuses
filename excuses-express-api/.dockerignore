@@ -1,0 +1,39 @@
+# Ignore sensitive files
+.env
+secrets.dev.yaml
+values.dev.yaml
+
+# Ignore version control files
+.git
+.gitignore
+.DS_Store  # macOS metadata
+
+# Ignore IDE/editor configurations
+.vs/
+.vscode/
+.idea/
+.project
+.settings
+.toolstarget
+
+# Ignore dependency folders (they will be installed in the container)
+node_modules/
+npm-debug.log
+
+# Ignore build artifacts
+bin/
+obj/
+*.dbmdl
+*.jfm
+
+# Ignore Docker-related files (optional)
+docker-compose*
+Dockerfile*
+
+# Ignore Helm charts (if not needed)
+charts/
+azds.yaml
+
+# Ignore unnecessary metadata files
+LICENSE
+README.md
