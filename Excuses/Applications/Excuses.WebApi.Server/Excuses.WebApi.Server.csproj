@@ -18,7 +18,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Libraries\Excuses.Persistence.EFCore\Excuses.Persistence.EFCore.csproj" />
-      <ProjectReference Include="..\..\Libraries\Excuses.Persistence.InMemory\Excuses.Persistence.InMemory.csproj" />
     </ItemGroup>
 
     <ItemGroup>

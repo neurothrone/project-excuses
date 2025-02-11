@@ -1,7 +1,5 @@
 using Excuses.Persistence.EFCore.Data;
 using Excuses.Persistence.EFCore.Repositories;
-using Excuses.Persistence.InMemory.Data;
-using Excuses.Persistence.InMemory.Repositories;
 using Excuses.Persistence.Shared.Interfaces;
 using Excuses.WebApi.Server.Endpoints;
 using Microsoft.AspNetCore.Diagnostics;
@@ -10,23 +8,19 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-const bool isPrototyping = false;
-
-// !: In-memory
-if (isPrototyping)
-{
-    builder.Services.AddSingleton<InMemoryDataStore>();
-    builder.Services.AddScoped<IExcuseRepository, ExcuseInMemoryRepository>();
-}
-
-// !: Entity Framework Core
 builder.Services.AddDbContext<ApiDbContext>(options =>
     {
-        // options.UseSqlite(builder.Configuration.GetConnectionString(nameof(ApiDbContext)) ?? "Data Source=excuses.db");
-        options.UseSqlServer(
-            builder.Configuration.GetConnectionString(nameof(ApiDbContext)) ?? throw new InvalidOperationException(
-                $"Connection string '{nameof(ApiDbContext)}' not found.")
-        );
+        // !: For deploying on AWS add SqliteConnection to connection strings in the following format:
+        // "SqliteConnection": "Data Source=/app/data/excuses.db"
+
+        // !: SQLite is used for local development
+        options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection") ?? "Data Source=excuses.db");
+
+        // !: SQL Server is used for production
+        // options.UseSqlServer(
+        //     builder.Configuration.GetConnectionString("AzureConnection") ?? throw new InvalidOperationException(
+        //         $"Connection string 'AzureConnection' not found.")
+        // );
 
 #if DEBUG
         options.EnableSensitiveDataLogging();
@@ -77,16 +71,15 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// if (!isPrototyping)
-//     await EnsureDatabaseIsMigrated(app.Services);
-//
-// async Task EnsureDatabaseIsMigrated(IServiceProvider services)
-// {
-//     using var scope = services.CreateScope();
-//     await using var context = scope.ServiceProvider.GetService<ApiDbContext>();
-//     if (context is not null)
-//         await context.Database.MigrateAsync();
-// }
+await EnsureDatabaseIsMigrated(app.Services);
+
+async Task EnsureDatabaseIsMigrated(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    await using var context = scope.ServiceProvider.GetService<ApiDbContext>();
+    if (context is not null)
+        await context.Database.MigrateAsync();
+}
 
 // Use CORS
 app.UseCors("AllowAll");
@@ -98,6 +91,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// NOTE: This is not recommended for production
 app.UseHttpsRedirection();
 
 app.UseExceptionHandler(appBuilder =>
