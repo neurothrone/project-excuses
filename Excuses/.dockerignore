@@ -1,25 +1,43 @@
-﻿**/.dockerignore
+﻿# Ignore sensitive files
 **/.env
+**/secrets.dev.yaml
+**/values.dev.yaml
+**/appsettings.json
+**/appsettings.*.json
+
+# Ignore version control files
 **/.git
 **/.gitignore
-**/.project
-**/.settings
-**/.toolstarget
+
+# Ignore IDE/editor settings
 **/.vs
 **/.vscode
 **/.idea
-**/*.*proj.user
+**/.project
+**/.settings
+**/.toolstarget
+
+# Ignore compiled artifacts & dependencies
+**/bin
+**/obj
 **/*.dbmdl
 **/*.jfm
-**/azds.yaml
-**/bin
-**/charts
+
+# Ignore Docker-related files
 **/docker-compose*
 **/Dockerfile*
+
+# Ignore Node.js dependencies (if applicable)
 **/node_modules
 **/npm-debug.log
-**/obj
-**/secrets.dev.yaml
-**/values.dev.yaml
+
+# Ignore Kubernetes & Helm charts (if applicable)
+**/charts
+**/azds.yaml
+
+# Miscellaneous
 LICENSE
 README.md
+
+# Mac system files
+**/.DS_Store
