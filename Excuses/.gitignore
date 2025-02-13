@@ -492,6 +492,8 @@ add-sql-firewall-rules.sh
 
 # SQLite database files
 *.db
+*.db-shm
+*.db-wal
 
 # Docker Compose files
 docker-compose.*.yml

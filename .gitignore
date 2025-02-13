@@ -483,5 +483,17 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-# Ignore deployment-specific compose file
-docker-compose.prod.yml
+# Ignore configuration files with sensitive data
+appsettings.json
+secrets.json
+
+# Ignore scripts with sensitive data
+add-sql-firewall-rules.sh
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
+# Docker Compose files
+docker-compose.*.yml
