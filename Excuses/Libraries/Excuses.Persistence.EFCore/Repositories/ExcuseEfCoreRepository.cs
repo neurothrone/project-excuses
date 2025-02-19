@@ -94,7 +94,8 @@ public class ExcuseEfCoreRepository : IExcuseRepository
         {
             var excuse = await _context.Excuses
                 .AsNoTracking()
-                .OrderBy(e => EF.Functions.Random())
+                .OrderBy(_ => Guid.NewGuid())
+                .Take(1)
                 .FirstOrDefaultAsync();
             return excuse is not null
                 ? Result<Excuse>.Success(excuse)
@@ -114,7 +115,8 @@ public class ExcuseEfCoreRepository : IExcuseRepository
             var excuse = await _context.Excuses
                 .AsNoTracking()
                 .Where(e => e.Category == category)
-                .OrderBy(e => EF.Functions.Random())
+                .OrderBy(_ => Guid.NewGuid())
+                .Take(1)
                 .FirstOrDefaultAsync();
             return excuse is not null
                 ? Result<Excuse>.Success(excuse)
