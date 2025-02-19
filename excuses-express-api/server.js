@@ -48,7 +48,7 @@ app.get("/api/excuses", async (req, res) => {
 app.get("/api/excuses/random", async (req, res) => {
   try {
     const {category} = req.query;
-    const response = await client.get(category ? `${DOTNET_API_URL}/excuses/random?category=${category}` : `${DOTNET_API_URL}/random`);
+    const response = await client.get(category ? `${DOTNET_API_URL}/excuses/random?category=${category}` : `${DOTNET_API_URL}/excuses/random`);
     res.json(response.data);
   } catch (err) {
     handleAxiosError(err, res);
