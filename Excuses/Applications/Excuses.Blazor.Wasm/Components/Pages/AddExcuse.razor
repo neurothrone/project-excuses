@@ -62,6 +62,11 @@
         // _isError = true;
         // return;
 
+        await LoadCategories();
+    }
+
+    private async Task LoadCategories()
+    {
         _isLoadingCategories = true;
 
         var result = await ExcuseRepository.GetCategoriesAsync();
